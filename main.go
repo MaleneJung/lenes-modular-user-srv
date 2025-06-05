@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/MaleneJung/go-mux-frontend-routing-walker/frontend"
+	"github.com/MaleneJung/lenes-modular-user-srv/backend"
 )
 
 type Config struct {
@@ -44,6 +45,17 @@ func main() {
 	serveMux := http.NewServeMux()
 
 	if err := frontend.MuxFrontendWalker(serveMux, "/", "lenes-modular-user/", true); err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	api := backend.NewAPI()
+	if err := api.LoadFromFile(); err != nil {
+		log.Fatal(err)
+		return
+	}
+	api.RegisterRouteHandlers(serveMux)
+	if err := api.SaveToFile(); err != nil {
 		log.Fatal(err)
 		return
 	}
